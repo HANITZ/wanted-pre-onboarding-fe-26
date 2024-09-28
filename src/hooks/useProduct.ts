@@ -5,12 +5,18 @@ export function useProduct() {
   const [products, setProducts] = useState<MockData[]>([]);
   const [page, setPage] = useState(0);
   const [end, setEnd] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    getMockData(page).then(({ datas, isEnd }) => {
-      setProducts((prev) => [...prev, ...datas]);
-      setEnd(isEnd);
-    });
+    setIsLoading(true);
+    getMockData(page)
+      .then(({ datas, isEnd }) => {
+        setProducts((prev) => [...prev, ...datas]);
+        setEnd(isEnd);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, [page]);
 
   const loadMore = useCallback(() => {
@@ -19,5 +25,5 @@ export function useProduct() {
     }
   }, [setPage, end]);
 
-  return { products, loadMore };
+  return { products, loadMore, isLoading };
 }
